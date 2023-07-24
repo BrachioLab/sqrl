@@ -1,0 +1,5 @@
+# pycocotools
+# git+https://github.com/waspinator/pycococreator.git@0.2.0
+# git+https://github.com/waspinator/coco.git@2.1.0
+git+https://github.com/mapillary/inplace_abn.git
+git+https://github.com/waspinator/coco.git@2.1.0

@@ -1,0 +1,87 @@
+mTan:
+  model:
+    latent_dim: 20
+    rec_hidden: 64
+    learn_emb: true
+    enc_num_heads: 1
+    num_ref_points: 128
+    gen_hidden: 30
+    dec_num_heads: 1
+    k_iwae: 1
+    norm: true
+    std: 0.01
+    kl_coef: 1
+    classify_pertp: false
+  train:
+    alpha: 100
+    beta: 0.2
+    kl: true
+    lr: 0.001
+    batch_size: 16
+    epochs: 50
+  test_time:
+    alpha: 100
+    beta: 2
+    kl: true
+    lr: 0.001
+    batch_size: 16
+    epochs: 5
+
+
+csdi:
+  train:
+    epochs: 200
+    batch_size: 16
+    lr: 1.0e-3
+    beta: 0.02
+  test_time:
+    epochs: 20
+    batch_size: 16
+    lr: 1.0e-3
+    beta: 0.0002
+  model:
+    layers: 4 
+    channels: 64 
+    nheads: 8
+    diffusion_embedding_dim: 128
+    beta_start: 0.0001
+    beta_end: 0.5
+    num_steps: 50
+    schedule: "quad"
+    is_unconditional: 0
+    timeemb: 128
+    featureemb: 16
+    target_strategy: "random"
+
+saits:
+  model:
+    MIT: true 
+    n_groups: 5
+    n_group_inner_layers: 1
+    d_time: 48
+    d_feature: 37
+    dropout: 0.0
+    d_model: 256
+    d_inner: 512
+    n_head: 8
+    d_k: 32
+    d_v: 32
+    input_with_mask: true
+    diagonal_attention_mask: true
+    param_sharing_strategy: "inner_group"
+
+  train:
+    reconstruction_loss_weight: 1
+    imputation_loss_weight: 1
+    lr: 0.00068277455043675505
+    batch_size: 512
+    epochs: 100
+    beta: 0.001
+
+  test_time:
+    reconstruction_loss_weight: 1
+    imputation_loss_weight: 1
+    lr: 0.000068277455043675505
+    batch_size: 512
+    epochs: 400
+    beta: 0.001

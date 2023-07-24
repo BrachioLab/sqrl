@@ -1,0 +1,5 @@
+interval3
+scikit-learn
+textblob
+transformers
+git+https://github.com/mapillary/inplace_abn.git

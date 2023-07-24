@@ -1,0 +1,8 @@
+git+https://github.com/mapillary/inplace_abn.git
+scikit-learn
+scipy
+numpy
+shapely
+imagenet_x
+scipy
+scikit-learn

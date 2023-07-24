@@ -1,0 +1,6 @@
+matplotlib
+scikit-learn
+tqdm
+pandas
+PyYAML
+git+https://github.com/mapillary/inplace_abn.git

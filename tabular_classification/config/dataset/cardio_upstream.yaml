@@ -1,0 +1,11 @@
+name: cardio_upstream
+source: local
+task: multilabel
+normalization: standard
+normalizer_path: '/path/normalizer.pkl'
+data_path: '/path/'
+out_path: '/path/output/'
+stage: 'pretrain'
+full_model: true
+train: 'true'
+y_policy:

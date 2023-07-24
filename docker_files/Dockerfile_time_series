@@ -1,0 +1,70 @@
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y libxml2 && apt-get install -y build-essential && apt-get install -y curl && apt-get install -y wget
+RUN apt-get update && apt-get -y upgrade && apt-get install -y vim && apt-get install -y git
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+# install cuda
+# SHELL ["/bin/bash", "-c"]
+CMD ["bash"]
+ENV NVARCH=ppc64el
+ENV NVIDIA_REQUIRE_CUDA=cuda>=10.2
+ENV NV_CUDA_CUDART_VERSION=10.2.89-1
+ARG TARGETARCH
+# LABEL maintainer=NVIDIA CORPORATION <cudatools@nvidia.com>
+RUN TARGETARCH=ppc64le apt-get update
+RUN apt-get install -y --no-install-recommends     gnupg2 curl ca-certificates
+RUN curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/${NVARCH}/3bf863cc.pub | apt-key add - 
+RUN echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/${NVARCH} /" > /etc/apt/sources.list.d/cuda.list 
+RUN apt-get purge --autoremove -y curl     && rm -rf /var/lib/apt/lists/*
+ENV CUDA_VERSION=10.2.89
+RUN TARGETARCH=ppc64le apt-get update
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-license-10-2_10.2.89-1_amd64.deb
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-cudart-10-2_10.2.89-1_amd64.deb
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-compat-10-2_440.33.01-1_amd64.deb
+RUN dpkg -i cuda-license-10-2_10.2.89-1_amd64.deb
+RUN dpkg -i cuda-cudart-10-2_10.2.89-1_amd64.deb
+RUN dpkg -i cuda-compat-10-2_440.33.01-1_amd64.deb
+# RUN apt-get install -y --no-install-recommends     cuda-cudart-10-2=10.2.89-1   cuda-compat-10-2  
+RUN ln -s cuda-10.2 /usr/local/cuda 
+RUN  rm -rf /var/lib/apt/lists/*
+RUN TARGETARCH=ppc64le echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf &&     echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
+ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+# COPY NGC-DL-CONTAINER-LICENSE / # buildkit
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV NVARCH=x86_64
+ENV NVIDIA_REQUIRE_CUDA=cuda>=10.2 brand=tesla
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+RUN mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN wget https://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda-repo-ubuntu1804-10-2-local-10.2.89-440.33.01_1.0-1_amd64.deb
+RUN dpkg -i cuda-repo-ubuntu1804-10-2-local-10.2.89-440.33.01_1.0-1_amd64.deb
+# RUN apt-key add /var/cuda-repo-10-2-local-10.2.89-440.33.01/7fa2af80.pub && apt-get update && apt-get -y install cuda
+#,driver>=418,driver<419
+COPY . /app
+WORKDIR /app
+# COPY requirements.txt /app/requirements.txt
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2023.03-1-Linux-x86_64.sh -O ~/anaconda.sh
+RUN /bin/bash ~/anaconda.sh -b -p /opt/anaconda
+ENV PATH="/opt/anaconda/bin:${PATH}"
+# RUN . /root/.bashrc && \
+    # /opt/anaconda/bin/conda init bash && 
+# RUN conda env create -n efficientPS_env --file=object_detection/environment.yml
+# # RUN conda activate efficientPS_env
+# SHELL ["conda", "run", "-n", "efficientPS_env", "/bin/bash", "-c"]
+# RUN echo "source activate efficientPS_env" >> /root/.bashrc
+# ENV PATH /opt/conda/envs/env/bin:$PATH
+RUN conda create --name ts_env python=3.8
+# RUN conda activate efficientPS_env
+SHELL ["conda", "run", "-n", "ts_env", "/bin/bash", "-c"]
+RUN echo "source activate ts_env" >> /root/.bashrc
+ENV PATH /opt/conda/envs/ts_env/bin:$PATH
+RUN pip install torch==1.12.1+cu102 torchvision==0.13.1+cu102 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu102
+RUN pip install --upgrade numpy
+RUN pip install shapely
+# RUN echo 'alias ll="ls -a"' >> /root/.bashrc
+# SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c", "source activate"]
+# RUN /opt/anaconda/bin/conda create --name env 
+#&& /opt/anaconda/bin/conda activate env
+# RUN echo "/opt/anaconda/bin/conda activate env" >> ~/.bashrc
+SHELL ["/bin/bash"]
+EXPOSE 8890

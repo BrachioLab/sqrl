@@ -1,0 +1,28 @@
+epochs: 5
+lr: 0.001
+lr_decay: step
+lr_factor: 0.1
+lr_schedule:
+  - 40
+  - 80
+optimizer: adam
+patience: 30
+save_period: -1
+seed: 0
+test_batch_size: 4096
+train_batch_size: 4096
+use_patience: true
+val_period: 1
+warmup_period: 5
+weight_decay: 2e-4
+momentum: 0.9
+warmup_type: linear
+head_warmup_period: 10
+head_lr: 0.001
+k: 200
+validate: True
+load_filtered_rules: true
+tta_method: rule
+extensive_eval: False
+eval_k: 1000
+load_model_name: test_model_best.pth
